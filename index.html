@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Millo — Sell What You Love</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --cream: #faf7f2;
+  --warm: #f2ece0;
+  --sand: #e8dcc8;
+  --clay: #c9a87c;
+  --terracotta: #b5623a;
+  --bark: #7a4a2a;
+  --ink: #1e1510;
+  --fog: #8a7d6e;
+  --white: #ffffff;
+  --green: #3d7a5a;
+  --red: #b5362a;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(30,21,16,0.10);
+  --shadow-lg: 0 12px 48px rgba(30,21,16,0.16);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
+
+/* ── TYPOGRAPHY ── */
+h1,h2,h3{font-family:'Playfair Display',serif}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(250,247,242,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--sand);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:64px}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--terracotta);font-weight:700;letter-spacing:-0.5px;cursor:pointer;display:flex;align-items:center;gap:.4rem}
+.nav-logo span{font-style:italic;font-weight:400;color:var(--clay)}
+.nav-links{display:flex;align-items:center;gap:1rem}
+.nav-links button{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--fog);cursor:pointer;padding:.4rem .8rem;border-radius:8px;transition:.2s}
+.nav-links button:hover{color:var(--ink);background:var(--warm)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;font-family:'DM Sans',sans-serif;font-weight:500;border:none;cursor:pointer;transition:.2s;border-radius:var(--radius)}
+.btn-primary{background:var(--terracotta);color:#fff;padding:.65rem 1.4rem;font-size:.9rem}
+.btn-primary:hover{background:var(--bark)}
+.btn-ghost{background:transparent;border:1.5px solid var(--sand);color:var(--ink);padding:.6rem 1.3rem;font-size:.9rem}
+.btn-ghost:hover{border-color:var(--clay);background:var(--warm)}
+.btn-sm{padding:.45rem 1rem;font-size:.82rem}
+.btn-danger{background:var(--red);color:#fff;padding:.45rem 1rem;font-size:.82rem}
+.btn-danger:hover{opacity:.85}
+
+/* ── PAGES ── */
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── HERO ── */
+.hero{position:relative;overflow:hidden;padding:7rem 2rem 5rem;text-align:center;background:linear-gradient(160deg,var(--cream) 0%,var(--warm) 60%,var(--sand) 100%)}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 60% 30%,rgba(201,168,124,.18),transparent),radial-gradient(ellipse 40% 40% at 20% 80%,rgba(181,98,58,.10),transparent);pointer-events:none}
+.hero-tag{display:inline-block;background:var(--terracotta);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .9rem;border-radius:50px;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.4rem,6vw,4.2rem);line-height:1.15;margin-bottom:1.2rem;color:var(--ink)}
+.hero h1 em{color:var(--terracotta);font-style:italic}
+.hero-sub{font-size:1.1rem;color:var(--fog);max-width:520px;margin:0 auto 2.4rem;line-height:1.65}
+.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.hero-stats{margin-top:4rem;display:flex;gap:3rem;justify-content:center;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:2rem;color:var(--terracotta);font-weight:700}
+.stat-label{font-size:.82rem;color:var(--fog);margin-top:.2rem}
+
+/* ── PRICING BANNER ── */
+.pricing-banner{background:var(--ink);color:#fff;padding:3.5rem 2rem;text-align:center}
+.pricing-banner h2{font-size:1.8rem;margin-bottom:.6rem;color:var(--clay)}
+.pricing-banner p{color:rgba(255,255,255,.65);font-size:.95rem;margin-bottom:1.8rem}
+.price-card{display:inline-flex;align-items:center;gap:1.5rem;background:rgba(255,255,255,.07);border:1px solid rgba(201,168,124,.3);border-radius:16px;padding:1.5rem 2.5rem;flex-wrap:wrap;justify-content:center}
+.price-num{font-family:'Playfair Display',serif;font-size:3rem;color:var(--clay);line-height:1}
+.price-desc{text-align:left;font-size:.85rem;color:rgba(255,255,255,.6);max-width:200px}
+.price-desc strong{display:block;font-size:1rem;color:#fff;margin-bottom:.3rem}
+
+/* ── SECTION ── */
+.section{padding:4rem 2rem;max-width:1200px;margin:0 auto}
+.section-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.section-header h2{font-size:1.8rem}
+.filter-bar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:2rem}
+.filter-bar input{flex:1;min-width:200px;padding:.6rem 1rem;border:1.5px solid var(--sand);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;background:var(--white);color:var(--ink);outline:none;transition:.2s}
+.filter-bar input:focus{border-color:var(--clay)}
+.filter-btn{padding:.5rem 1rem;border:1.5px solid var(--sand);border-radius:50px;font-size:.82rem;background:var(--white);cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;color:var(--fog)}
+.filter-btn:hover,.filter-btn.active{background:var(--terracotta);border-color:var(--terracotta);color:#fff}
+
+/* ── PRODUCT GRID ── */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem}
+.product-card{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);transition:.25s;cursor:pointer}
+.product-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.product-img{width:100%;height:200px;object-fit:cover;background:var(--sand);display:block}
+.product-img-placeholder{width:100%;height:200px;background:linear-gradient(135deg,var(--sand),var(--warm));display:flex;align-items:center;justify-content:center;font-size:3rem}
+.product-body{padding:1.2rem}
+.product-cat{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--clay);margin-bottom:.4rem}
+.product-name{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:.4rem;color:var(--ink)}
+.product-desc{font-size:.85rem;color:var(--fog);line-height:1.5;margin-bottom:.9rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.product-footer{display:flex;align-items:center;justify-content:space-between}
+.product-price{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--terracotta);font-weight:700}
+.product-seller{font-size:.78rem;color:var(--fog)}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(30,21,16,.5);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+.modal{background:var(--white);border-radius:20px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--sand)}
+.modal-header h3{font-size:1.3rem}
+.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--fog);line-height:1;padding:.2rem}
+.modal-body{padding:1.5rem}
+
+/* ── FORMS ── */
+.form-group{margin-bottom:1.2rem}
+label{display:block;font-size:.85rem;font-weight:500;color:var(--ink);margin-bottom:.4rem}
+input[type=text],input[type=email],input[type=password],input[type=number],textarea,select{width:100%;padding:.7rem 1rem;border:1.5px solid var(--sand);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;background:var(--white);color:var(--ink);outline:none;transition:.2s;resize:vertical}
+input:focus,textarea:focus,select:focus{border-color:var(--clay);box-shadow:0 0 0 3px rgba(201,168,124,.15)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-hint{font-size:.78rem;color:var(--fog);margin-top:.3rem}
+.alert{padding:.8rem 1.2rem;border-radius:10px;font-size:.88rem;margin-bottom:1rem}
+.alert-err{background:#fdecea;color:var(--red);border:1px solid #f5c6c3}
+.alert-ok{background:#eaf5ee;color:var(--green);border:1px solid #b7dfc4}
+
+/* ── DASHBOARD ── */
+.dashboard{max-width:900px;margin:0 auto;padding:2.5rem 2rem}
+.dash-header{margin-bottom:2rem}
+.dash-header h2{font-size:2rem;margin-bottom:.3rem}
+.dash-header p{color:var(--fog)}
+.dash-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.2rem;margin-bottom:2.5rem}
+.dash-card{background:var(--white);border-radius:14px;padding:1.4rem;box-shadow:var(--shadow)}
+.dash-card-label{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--fog);margin-bottom:.6rem}
+.dash-card-val{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--terracotta)}
+.dash-card-note{font-size:.78rem;color:var(--fog);margin-top:.3rem}
+.billing-banner{background:var(--warm);border:1.5px solid var(--sand);border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.billing-icon{font-size:1.6rem}
+.billing-text strong{display:block;font-size:.95rem;color:var(--ink)}
+.billing-text span{font-size:.83rem;color:var(--fog)}
+.my-products-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+.my-products-header h3{font-size:1.3rem}
+.my-product-row{display:flex;align-items:center;gap:1rem;background:var(--white);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.8rem;box-shadow:0 2px 8px rgba(30,21,16,.06)}
+.my-product-img{width:56px;height:56px;object-fit:cover;border-radius:8px;background:var(--sand);flex-shrink:0}
+.my-product-img-placeholder{width:56px;height:56px;border-radius:8px;background:var(--sand);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.my-product-info{flex:1;min-width:0}
+.my-product-name{font-weight:500;font-size:.93rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.my-product-meta{font-size:.78rem;color:var(--fog)}
+.my-product-actions{display:flex;gap:.5rem;flex-shrink:0}
+.bill-per-product{font-size:.75rem;color:var(--clay);font-weight:600;white-space:nowrap}
+
+/* ── PRODUCT DETAIL MODAL ── */
+.product-detail-img{width:100%;height:240px;object-fit:cover;border-radius:12px;margin-bottom:1.2rem;background:var(--sand)}
+.product-detail-price{font-family:'Playfair Display',serif;font-size:2rem;color:var(--terracotta);margin:.5rem 0}
+.product-detail-store{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--fog);margin-top:.8rem}
+.store-dot{width:8px;height:8px;border-radius:50%;background:var(--clay)}
+
+/* ── FEATURES ── */
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;padding:4rem 2rem;max-width:1100px;margin:0 auto}
+.feature{background:var(--white);border-radius:16px;padding:1.8rem;box-shadow:var(--shadow)}
+.feature-icon{font-size:2rem;margin-bottom:1rem}
+.feature h3{font-size:1.05rem;margin-bottom:.5rem}
+.feature p{font-size:.85rem;color:var(--fog);line-height:1.6}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);color:rgba(255,255,255,.5);text-align:center;padding:2rem;font-size:.85rem}
+footer strong{color:var(--clay)}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:4rem 2rem;color:var(--fog)}
+.empty-icon{font-size:3rem;margin-bottom:1rem}
+.empty h3{font-size:1.2rem;color:var(--ink);margin-bottom:.5rem}
+
+/* ── TABS ── */
+.auth-tabs{display:flex;border-bottom:1.5px solid var(--sand);margin-bottom:1.5rem}
+.auth-tab{flex:1;padding:.8rem;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:.9rem;cursor:pointer;color:var(--fog);transition:.2s;border-bottom:2px solid transparent;margin-bottom:-1.5px}
+.auth-tab.active{color:var(--terracotta);border-bottom-color:var(--terracotta);font-weight:500}
+
+@media(max-width:640px){
+  .form-row{grid-template-columns:1fr}
+  .hero{padding:4rem 1.2rem 3rem}
+  .hero-stats{gap:1.5rem}
+  nav{padding:0 1rem}
+  .section{padding:3rem 1.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">Millo <span>market</span></div>
+  <div class="nav-links">
+    <button onclick="showPage('home')">Browse</button>
+    <button id="navDashBtn" style="display:none" onclick="showPage('dashboard')">My Store</button>
+    <button id="navLogoutBtn" style="display:none" onclick="logout()">Sign out</button>
+    <button id="navAuthBtn" class="btn btn-primary btn-sm" onclick="openAuth()">Start Selling</button>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-tag">🛍️ Canada's Maker Marketplace</div>
+    <h1>Sell what you love<br><em>reach who matters</em></h1>
+    <p class="hero-sub">Millo gives makers, artists, and entrepreneurs a beautiful storefront — for just $25 CAD per product, per month.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="openAuth('signup')">Start Selling — $25/mo per product</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('browse').scrollIntoView({behavior:'smooth'})">Browse Products</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num" id="statProducts">0</div><div class="stat-label">Products Listed</div></div>
+      <div class="stat"><div class="stat-num" id="statSellers">0</div><div class="stat-label">Active Sellers</div></div>
+      <div class="stat"><div class="stat-num">$25</div><div class="stat-label">CAD / product / month</div></div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature"><div class="feature-icon">🏪</div><h3>Your Own Storefront</h3><p>Each seller gets a branded page showcasing all your products in one place.</p></div>
+    <div class="feature"><div class="feature-icon">💳</div><h3>Simple Flat Pricing</h3><p>$25 CAD per product per month — no commission, no hidden fees, no surprises.</p></div>
+    <div class="feature"><div class="feature-icon">🚀</div><h3>List in Minutes</h3><p>Add a product with name, description, photo, and price and go live instantly.</p></div>
+    <div class="feature"><div class="feature-icon">🇨🇦</div><h3>Built for Canadian Makers</h3><p>Proudly Canadian platform for crafters, artists, and independent sellers.</p></div>
+  </div>
+
+  <div id="browse" class="section">
+    <div class="section-header">
+      <h2>Browse Products</h2>
+    </div>
+    <div class="filter-bar">
+      <input type="text" placeholder="Search products…" id="searchInput" oninput="loadProducts()"/>
+      <button class="filter-btn active" data-cat="all" onclick="setCategory(this)">All</button>
+      <button class="filter-btn" data-cat="Handmade" onclick="setCategory(this)">Handmade</button>
+      <button class="filter-btn" data-cat="Electronics" onclick="setCategory(this)">Electronics</button>
+      <button class="filter-btn" data-cat="Clothing" onclick="setCategory(this)">Clothing</button>
+      <button class="filter-btn" data-cat="Books" onclick="setCategory(this)">Books</button>
+      <button class="filter-btn" data-cat="Home & Garden" onclick="setCategory(this)">Home & Garden</button>
+      <button class="filter-btn" data-cat="Art" onclick="setCategory(this)">Art</button>
+    </div>
+    <div id="productGrid" class="product-grid"></div>
+  </div>
+
+  <div class="pricing-banner">
+    <h2>Ready to start selling?</h2>
+    <p>One simple, honest price. No commission. Cancel anytime.</p>
+    <div class="price-card">
+      <div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">Per product</div>
+        <div class="price-num">$25<span style="font-size:1.2rem;font-family:'DM Sans',sans-serif;color:var(--fog)"> CAD</span></div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.4);margin-top:.2rem">/ month</div>
+      </div>
+      <div class="price-desc"><strong>What's included</strong>Product listing · Storefront page · Unlimited photos · Real-time analytics · Email support</div>
+    </div>
+    <div style="margin-top:1.8rem"><button class="btn btn-primary" onclick="openAuth('signup')">Create Your Store</button></div>
+  </div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div id="page-dashboard" class="page">
+  <div class="dashboard">
+    <div class="dash-header">
+      <h2 id="dashStoreName">My Store</h2>
+      <p id="dashWelcome">Welcome back!</p>
+    </div>
+    <div class="dash-cards">
+      <div class="dash-card"><div class="dash-card-label">Products Listed</div><div class="dash-card-val" id="dashProductCount">0</div><div class="dash-card-note">active listings</div></div>
+      <div class="dash-card"><div class="dash-card-label">Monthly Bill</div><div class="dash-card-val" id="dashBill">$0</div><div class="dash-card-note">CAD / month</div></div>
+      <div class="dash-card"><div class="dash-card-label">Rate</div><div class="dash-card-val">$25</div><div class="dash-card-note">CAD per product</div></div>
+    </div>
+    <div class="billing-banner">
+      <div class="billing-icon">📋</div>
+      <div class="billing-text">
+        <strong>Billing at a glance</strong>
+        <span id="billingNote">You currently have 0 products listed at $25 CAD/month each.</span>
+      </div>
+    </div>
+    <div class="my-products-header">
+      <h3>Your Products</h3>
+      <button class="btn btn-primary btn-sm" onclick="openAddProduct()">+ Add Product</button>
+    </div>
+    <div id="myProductsList"></div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Welcome to Millo</h3>
+      <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+      <div id="authAlert"></div>
+
+      <!-- LOGIN -->
+      <div id="loginForm">
+        <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"/></div>
+        <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"/></div>
+        <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Sign In</button>
+        <p style="text-align:center;font-size:.8rem;color:var(--fog);margin-top:.8rem">Demo: sophie@demo.com / demo123</p>
+      </div>
+
+      <!-- SIGNUP -->
+      <div id="signupForm" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label>Your Name</label><input type="text" id="signupName" placeholder="Sophie Laurent"/></div>
+          <div class="form-group"><label>Store Name</label><input type="text" id="signupStore" placeholder="Sophie's Goods"/></div>
+        </div>
+        <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="you@example.com"/></div>
+        <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Choose a strong password"/></div>
+        <div class="form-group" style="background:var(--warm);border-radius:10px;padding:.9rem 1rem">
+          <div style="font-size:.83rem;color:var(--fog)">💰 Pricing: <strong style="color:var(--terracotta)">$25 CAD</strong> per product per month. Add products after signing up.</div>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="doSignup()">Create My Store</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT PRODUCT MODAL -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="productModalTitle">Add a Product</h3>
+      <button class="modal-close" onclick="closeModal('productModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="productAlert"></div>
+      <input type="hidden" id="editProductId"/>
+      <div class="form-group"><label>Product Name</label><input type="text" id="pName" placeholder="Hand-poured Soy Candle"/></div>
+      <div class="form-group"><label>Description</label><textarea id="pDesc" rows="3" placeholder="Describe your product…"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Price (CAD $)</label><input type="number" id="pPrice" placeholder="49.00" min="0" step="0.01"/></div>
+        <div class="form-group"><label>Category</label>
+          <select id="pCategory">
+            <option value="">Select…</option>
+            <option>Handmade</option><option>Electronics</option><option>Clothing</option>
+            <option>Books</option><option>Home & Garden</option><option>Art</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Image URL <span style="font-weight:400;color:var(--fog)">(optional)</span></label><input type="text" id="pImage" placeholder="https://example.com/photo.jpg"/></div>
+      <div class="form-hint" style="margin-bottom:1rem">💳 This product costs <strong>$25 CAD/month</strong> to list on Millo.</div>
+      <button class="btn btn-primary" style="width:100%" onclick="saveProduct()">Save Product — $25/mo</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="detailTitle">Product</h3>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+  </div>
+</div>
+
+<footer>
+  <strong>Millo</strong> — Canada's Maker Marketplace · $25 CAD per product per month · No commission, ever.
+</footer>
+
+<script>
+let currentCategory = 'all';
+let currentSeller = null;
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function api(method, url, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(url, opts);
+  return r.json();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  const { seller, productCount, monthlyBill } = await api('GET', '/api/me');
+  currentSeller = seller;
+  updateNav();
+  loadProducts();
+  loadStats();
+  if (seller) loadDashboard();
+}
+
+function updateNav() {
+  document.getElementById('navAuthBtn').style.display = currentSeller ? 'none' : 'inline-flex';
+  document.getElementById('navDashBtn').style.display = currentSeller ? 'inline-flex' : 'none';
+  document.getElementById('navLogoutBtn').style.display = currentSeller ? 'inline-flex' : 'none';
+}
+
+async function loadStats() {
+  const { products } = await api('GET', '/api/products');
+  document.getElementById('statProducts').textContent = products.length;
+  const sellers = new Set(products.map(p => p.sellerId));
+  document.getElementById('statSellers').textContent = sellers.size;
+}
+
+// ── PAGES ─────────────────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (id === 'dashboard') loadDashboard();
+  if (id === 'home') loadProducts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── PRODUCTS ──────────────────────────────────────────────────────────────────
+async function loadProducts() {
+  const search = document.getElementById('searchInput')?.value || '';
+  let url = `/api/products?search=${encodeURIComponent(search)}&category=${encodeURIComponent(currentCategory)}`;
+  const { products } = await api('GET', url);
+  const grid = document.getElementById('productGrid');
+  if (!products.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><h3>No products found</h3><p>Try a different search or category.</p></div>`;
+    return;
+  }
+  grid.innerHTML = products.map(p => `
+    <div class="product-card" onclick="openDetail('${p.id}')">
+      ${p.imageUrl ? `<img class="product-img" src="${escHtml(p.imageUrl)}" alt="${escHtml(p.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="product-img-placeholder" style="display:none">🛍️</div>` : `<div class="product-img-placeholder">🛍️</div>`}
+      <div class="product-body">
+        <div class="product-cat">${escHtml(p.category)}</div>
+        <div class="product-name">${escHtml(p.name)}</div>
+        <div class="product-desc">${escHtml(p.description)}</div>
+        <div class="product-footer">
+          <div class="product-price">$${Number(p.price).toFixed(2)}</div>
+          <div class="product-seller">${escHtml(p.storeName || p.sellerName || '')}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setCategory(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentCategory = btn.dataset.cat;
+  loadProducts();
+}
+
+async function openDetail(id) {
+  const { product } = await api('GET', `/api/products/${id}`);
+  if (!product) return;
+  document.getElementById('detailTitle').textContent = product.name;
+  document.getElementById('detailBody').innerHTML = `
+    ${product.imageUrl ? `<img class="product-detail-img" src="${escHtml(product.imageUrl)}" alt="${escHtml(product.name)}" onerror="this.src=''"/>` : ''}
+    <div class="product-cat">${escHtml(product.category)}</div>
+    <h2 style="font-size:1.5rem;margin:.3rem 0">${escHtml(product.name)}</h2>
+    <div class="product-detail-price">$${Number(product.price).toFixed(2)} <span style="font-size:1rem;font-family:'DM Sans',sans-serif;color:var(--fog)">CAD</span></div>
+    <p style="color:var(--fog);line-height:1.7;margin:1rem 0">${escHtml(product.description)}</p>
+    <div class="product-detail-store"><div class="store-dot"></div><span>Sold by <strong>${escHtml(product.storeName || product.sellerName || 'a Millo seller')}</strong></span></div>
+  `;
+  openModal('detailModal');
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  if (!currentSeller) return;
+  const { products, monthlyBill } = await api('GET', '/api/my-products');
+  document.getElementById('dashStoreName').textContent = currentSeller.storeName;
+  document.getElementById('dashWelcome').textContent = `Welcome back, ${currentSeller.name}!`;
+  document.getElementById('dashProductCount').textContent = products.length;
+  document.getElementById('dashBill').textContent = `$${monthlyBill}`;
+  document.getElementById('billingNote').textContent = `You have ${products.length} product${products.length!==1?'s':''} listed at $25 CAD/month each. Total: $${monthlyBill} CAD/month.`;
+
+  const list = document.getElementById('myProductsList');
+  if (!products.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">📦</div><h3>No products yet</h3><p>Add your first product to start selling on Millo.</p></div>`;
+    return;
+  }
+  list.innerHTML = products.map(p => `
+    <div class="my-product-row">
+      ${p.imageUrl ? `<img class="my-product-img" src="${escHtml(p.imageUrl)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="my-product-img-placeholder" style="display:none">🛍️</div>` : `<div class="my-product-img-placeholder">🛍️</div>`}
+      <div class="my-product-info">
+        <div class="my-product-name">${escHtml(p.name)}</div>
+        <div class="my-product-meta">$${Number(p.price).toFixed(2)} CAD · ${escHtml(p.category)}</div>
+      </div>
+      <div class="bill-per-product">$25/mo</div>
+      <div class="my-product-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editProduct(${JSON.stringify(p).replace(/"/g,'&quot;')})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+function openAuth(tab = 'login') {
+  switchAuthTab(tab);
+  clearAlert('authAlert');
+  openModal('authModal');
+}
+function switchAuthTab(tab) {
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+}
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) return showAlert('authAlert', 'err', 'Please fill in all fields.');
+  const r = await api('POST', '/api/login', { email, password });
+  if (r.error) return showAlert('authAlert', 'err', r.error);
+  currentSeller = r.seller;
+  closeModal('authModal');
+  updateNav();
+  showPage('dashboard');
+}
+async function doSignup() {
+  const name = document.getElementById('signupName').value.trim();
+  const storeName = document.getElementById('signupStore').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  if (!name || !storeName || !email || !password) return showAlert('authAlert', 'err', 'Please fill in all fields.');
+  const r = await api('POST', '/api/signup', { name, email, password, storeName });
+  if (r.error) return showAlert('authAlert', 'err', r.error);
+  currentSeller = r.seller;
+  closeModal('authModal');
+  updateNav();
+  showPage('dashboard');
+}
+async function logout() {
+  await api('POST', '/api/logout');
+  currentSeller = null;
+  updateNav();
+  showPage('home');
+}
+
+// ── PRODUCT CRUD ──────────────────────────────────────────────────────────────
+function openAddProduct() {
+  document.getElementById('productModalTitle').textContent = 'Add a Product';
+  document.getElementById('editProductId').value = '';
+  ['pName','pDesc','pPrice','pImage'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pCategory').value = '';
+  clearAlert('productAlert');
+  openModal('productModal');
+}
+function editProduct(p) {
+  document.getElementById('productModalTitle').textContent = 'Edit Product';
+  document.getElementById('editProductId').value = p.id;
+  document.getElementById('pName').value = p.name;
+  document.getElementById('pDesc').value = p.description;
+  document.getElementById('pPrice').value = p.price;
+  document.getElementById('pCategory').value = p.category;
+  document.getElementById('pImage').value = p.imageUrl || '';
+  clearAlert('productAlert');
+  openModal('productModal');
+}
+async function saveProduct() {
+  const id = document.getElementById('editProductId').value;
+  const name = document.getElementById('pName').value.trim();
+  const description = document.getElementById('pDesc').value.trim();
+  const price = document.getElementById('pPrice').value;
+  const category = document.getElementById('pCategory').value;
+  const imageUrl = document.getElementById('pImage').value.trim();
+  if (!name || !description || !price || !category) return showAlert('productAlert', 'err', 'Please fill in all required fields.');
+  const body = { name, description, price, category, imageUrl };
+  const r = id ? await api('PUT', `/api/products/${id}`, body) : await api('POST', '/api/products', body);
+  if (r.error) return showAlert('productAlert', 'err', r.error);
+  closeModal('productModal');
+  loadDashboard();
+  loadStats();
+}
+async function deleteProduct(id) {
+  if (!confirm('Remove this product? It will stop appearing in the marketplace and you will no longer be billed for it.')) return;
+  await api('DELETE', `/api/products/${id}`);
+  loadDashboard();
+  loadStats();
+}
+
+// ── MODAL UTILS ───────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ── ALERT ─────────────────────────────────────────────────────────────────────
+function showAlert(id, type, msg) {
+  const el = document.getElementById(id);
+  el.innerHTML = `<div class="alert alert-${type==='err'?'err':'ok'}">${escHtml(msg)}</div>`;
+}
+function clearAlert(id) { document.getElementById(id).innerHTML = ''; }
+
+// ── UTIL ──────────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+init();
+</script>
+</body>
+</html>

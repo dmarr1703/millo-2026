@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Runtime data
+db.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
+build/
+
+# Supervisor / PM2
+supervisord.pid
+supervisord.log
+supervisor.sock
+.pm2/
