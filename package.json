@@ -1,0 +1,14 @@
+{
+  "name": "millo",
+  "version": "2026.1.0",
+  "description": "Millo — Canada's Maker Marketplace. $25 CAD per product per month.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
