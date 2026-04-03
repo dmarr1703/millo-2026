@@ -1,0 +1,162 @@
+{
+  "sellers": {
+    "9d5fa63e76f47251324d9290": {
+      "id": "9d5fa63e76f47251324d9290",
+      "name": "Sophie Laurent",
+      "email": "sophie@demo.com",
+      "password": "40660460be381af8aa1abe41841167ec1fb48d02fbf5358a2381f0ea935bd93e",
+      "storeName": "Sophie's Artisan Goods",
+      "bio": "Handmade goods crafted with love in Montreal. Every piece is one-of-a-kind.",
+      "location": "Montréal, QC",
+      "website": "",
+      "joinedAt": 1772638804968
+    },
+    "8c0b4a69fbe92f16fc83eb3e": {
+      "id": "8c0b4a69fbe92f16fc83eb3e",
+      "name": "Marcus Chen",
+      "email": "marcus@demo.com",
+      "password": "40660460be381af8aa1abe41841167ec1fb48d02fbf5358a2381f0ea935bd93e",
+      "storeName": "Chen Tech Finds",
+      "bio": "Curated electronics and tech accessories for the modern maker.",
+      "location": "Vancouver, BC",
+      "website": "",
+      "joinedAt": 1773934804968
+    },
+    "ea5415f0750f8bd1d0d14a9b": {
+      "id": "ea5415f0750f8bd1d0d14a9b",
+      "name": "Amara Osei",
+      "email": "amara@demo.com",
+      "password": "40660460be381af8aa1abe41841167ec1fb48d02fbf5358a2381f0ea935bd93e",
+      "storeName": "Amara's Art Studio",
+      "bio": "Original paintings and prints inspired by African heritage and Canadian nature.",
+      "location": "Toronto, ON",
+      "website": "",
+      "joinedAt": 1774626004968
+    }
+  },
+  "products": [
+    {
+      "id": "44e79e4baba3ace4c2d4d714",
+      "createdAt": 1775101390836.361,
+      "name": "Hand-poured Soy Candle Set",
+      "description": "Set of 3 hand-poured soy wax candles with calming lavender, cedar, and citrus scents. Burns for 40+ hours each.",
+      "price": 48,
+      "category": "Handmade",
+      "imageUrl": "https://images.unsplash.com/photo-1608181831718-c9fca7c18c07?w=400&q=80",
+      "sellerId": "9d5fa63e76f47251324d9290"
+    },
+    {
+      "id": "60bbca3b954e5460cbfe1786",
+      "createdAt": 1774274772079.6436,
+      "name": "Macramé Wall Hanging",
+      "description": "Boho-chic hand-knotted macramé wall art, 60cm wide. Made with 100% natural cotton rope.",
+      "price": 75,
+      "category": "Handmade",
+      "imageUrl": "https://images.unsplash.com/photo-1601662528567-526cd06f6582?w=400&q=80",
+      "sellerId": "9d5fa63e76f47251324d9290"
+    },
+    {
+      "id": "5a474bcb186eb51b11e4d250",
+      "createdAt": 1773739750967.1052,
+      "name": "Ceramic Coffee Mug",
+      "description": "Wheel-thrown stoneware mug, holds 350ml, dishwasher safe. Each one unique with a speckled glaze.",
+      "price": 34,
+      "category": "Handmade",
+      "imageUrl": "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400&q=80",
+      "sellerId": "9d5fa63e76f47251324d9290"
+    },
+    {
+      "id": "ef96bed53355a14fdd6a1913",
+      "createdAt": 1774601377139.667,
+      "name": "Wireless Charging Pad",
+      "description": "Fast Qi wireless charger, 15W max output, compatible with all Qi-enabled phones. Includes USB-C cable.",
+      "price": 42,
+      "category": "Electronics",
+      "imageUrl": "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400&q=80",
+      "sellerId": "8c0b4a69fbe92f16fc83eb3e"
+    },
+    {
+      "id": "2643b66479fe19e15a5a60f6",
+      "createdAt": 1773707560314.8997,
+      "name": "Mechanical Keyboard",
+      "description": "Compact 75% layout, hot-swappable switches, RGB backlight. Perfect for coders and writers alike.",
+      "price": 129,
+      "category": "Electronics",
+      "imageUrl": "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=400&q=80",
+      "sellerId": "8c0b4a69fbe92f16fc83eb3e"
+    },
+    {
+      "id": "1ad5ecf0fd2a6abab53edb15",
+      "createdAt": 1773763612831.3484,
+      "name": "Linen Tote Bag",
+      "description": "Heavyweight natural linen tote, reinforced handles, inner zip pocket. Holds up to 15kg.",
+      "price": 29,
+      "category": "Clothing",
+      "imageUrl": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&q=80",
+      "sellerId": "9d5fa63e76f47251324d9290"
+    },
+    {
+      "id": "af72e56ce54f91df4fcaa8ed",
+      "createdAt": 1774587579405.4026,
+      "name": "Abstract Acrylic Print — Sunrise",
+      "description": "Original abstract acrylic painting on 40×50cm canvas. Warm sunrise palette, ready to hang.",
+      "price": 195,
+      "category": "Art",
+      "imageUrl": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80",
+      "sellerId": "ea5415f0750f8bd1d0d14a9b"
+    },
+    {
+      "id": "aa67494918b6282a0862fe9b",
+      "createdAt": 1773995939931.7852,
+      "name": "Botanical Watercolour Set",
+      "description": "Set of 6 A5 botanical watercolour prints, printed on 300gsm fine art paper. Perfect for framing.",
+      "price": 65,
+      "category": "Art",
+      "imageUrl": "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=400&q=80",
+      "sellerId": "ea5415f0750f8bd1d0d14a9b"
+    },
+    {
+      "id": "3f03484ba1e80a3508f0c38b",
+      "createdAt": 1774326198380.3608,
+      "name": "Knitted Wool Scarf",
+      "description": "Hand-knitted merino wool scarf, 180cm long. Incredibly soft and warm for Canadian winters.",
+      "price": 58,
+      "category": "Clothing",
+      "imageUrl": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=400&q=80",
+      "sellerId": "9d5fa63e76f47251324d9290"
+    },
+    {
+      "id": "78fca3a6144565581acbd3a6",
+      "createdAt": 1774132580386.8816,
+      "name": "The Maker's Mindset",
+      "description": "A practical guide to building a creative business in the digital age. 240 pages, paperback.",
+      "price": 22,
+      "category": "Books",
+      "imageUrl": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&q=80",
+      "sellerId": "8c0b4a69fbe92f16fc83eb3e"
+    },
+    {
+      "id": "eb3f570ae801f6eae53ff40e",
+      "createdAt": 1774081152838.327,
+      "name": "Herb Garden Starter Kit",
+      "description": "Everything you need to grow basil, mint, and thyme indoors. Includes pots, soil, and seed packets.",
+      "price": 37,
+      "category": "Home & Garden",
+      "imageUrl": "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&q=80",
+      "sellerId": "ea5415f0750f8bd1d0d14a9b"
+    },
+    {
+      "id": "0e4f0f78523e39d113fe71da",
+      "createdAt": 1774882957860.0317,
+      "name": "Beeswax Food Wraps (3-pack)",
+      "description": "Reusable beeswax food wraps in small, medium, and large. Eco-friendly alternative to plastic wrap.",
+      "price": 26,
+      "category": "Home & Garden",
+      "imageUrl": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&q=80",
+      "sellerId": "9d5fa63e76f47251324d9290"
+    }
+  ],
+  "sessions": {},
+  "messages": [],
+  "favorites": {}
+}
