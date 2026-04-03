@@ -2,8 +2,53 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const { execSync } = require("child_process");
 
 const DB_FILE = path.join(__dirname, "db.json");
+const PRODUCTS_FILE = path.join(__dirname, "products.json");
+
+// ── GitHub auto-commit ──────────────────────────────────────────────────────
+function gitCommit(message) {
+  try {
+    execSync("git add db.json products.json 2>/dev/null || git add db.json", {
+      cwd: __dirname,
+      stdio: "pipe",
+    });
+    execSync(`git commit -m ${JSON.stringify(message)} --allow-empty`, {
+      cwd: __dirname,
+      stdio: "pipe",
+    });
+    execSync("git push origin HEAD 2>&1 || true", {
+      cwd: __dirname,
+      stdio: "pipe",
+    });
+    console.log(`✅ GitHub commit: ${message}`);
+    return true;
+  } catch (e) {
+    console.warn("⚠️  Git commit failed:", e.message);
+    return false;
+  }
+}
+
+function syncProductsFile(db) {
+  // Write a human-readable products.json alongside db.json so the GitHub
+  // repo always has a clean catalogue viewable in the browser.
+  const catalogue = db.products.map((p) => {
+    const seller = db.sellers[p.sellerId];
+    return {
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      category: p.category,
+      imageUrl: p.imageUrl || "",
+      seller: seller ? { name: seller.name, storeName: seller.storeName, location: seller.location || "" } : {},
+      listedAt: new Date(p.createdAt).toISOString(),
+      updatedAt: p.updatedAt ? new Date(p.updatedAt).toISOString() : null,
+    };
+  });
+  fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(catalogue, null, 2));
+}
 
 // ── Tiny JSON database ──────────────────────────────────────────────────────
 function readDB() {
@@ -16,9 +61,10 @@ function readDB() {
 }
 function writeDB(db) {
   fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+  syncProductsFile(db);
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Helpers ─────────────────────────────────────────────────────────────────
 function uid() { return crypto.randomBytes(12).toString("hex"); }
 function hash(p) { return crypto.createHash("sha256").update(p + "millo_salt_2026").digest("hex"); }
 function parseBody(req) {
@@ -61,7 +107,7 @@ function html(res, content, code = 200) {
   res.end(content);
 }
 
-// ── Static page ──────────────────────────────────────────────────────────────
+// ── Static page ─────────────────────────────────────────────────────────────
 function servePage(res) {
   const rootFile = path.join(__dirname, "index.html");
   const publicFile = path.join(__dirname, "public", "index.html");
@@ -69,21 +115,25 @@ function servePage(res) {
   html(res, fs.readFileSync(file, "utf8"));
 }
 
-// ── Route handler ─────────────────────────────────────────────────────────────
+// ── Route handler ────────────────────────────────────────────────────────────
 async function router(req, res) {
   const url = req.url.split("?")[0];
   const method = req.method;
 
   // CORS preflight
   if (method === "OPTIONS") {
-    res.writeHead(204, { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE", "Access-Control-Allow-Headers": "Content-Type" });
+    res.writeHead(204, {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE",
+      "Access-Control-Allow-Headers": "Content-Type",
+    });
     return res.end();
   }
 
   // Serve static page
   if (method === "GET" && (url === "/" || url === "/index.html")) return servePage(res);
 
-  // ── AUTH ──────────────────────────────────────────────────────────────────
+  // ── AUTH ─────────────────────────────────────────────────────────────────
   if (method === "POST" && url === "/api/signup") {
     const { name, email, password, storeName } = await parseBody(req);
     if (!name || !email || !password || !storeName)
@@ -98,11 +148,13 @@ async function router(req, res) {
       id, name: name.trim(), email: email.toLowerCase().trim(),
       password: hash(password), storeName: storeName.trim(),
       bio: "", location: "", website: "",
-      joinedAt: Date.now()
+      joinedAt: Date.now(),
     };
     const sid = uid();
     db.sessions[sid] = { sellerId: id };
     writeDB(db);
+    // Auto-commit new seller signup
+    gitCommit(`feat(sellers): new seller signed up — "${storeName.trim()}" (${email.toLowerCase().trim()})`);
     res.setHeader("Set-Cookie", `millo_sid=${sid}; HttpOnly; Path=/; Max-Age=604800`);
     return json(res, { ok: true, seller: { id, name: name.trim(), email, storeName: storeName.trim() } });
   }
@@ -121,7 +173,11 @@ async function router(req, res) {
     res.setHeader("Set-Cookie", `millo_sid=${sid}; HttpOnly; Path=/; Max-Age=604800`);
     return json(res, {
       ok: true,
-      seller: { id: seller.id, name: seller.name, email: seller.email, storeName: seller.storeName, bio: seller.bio || "", location: seller.location || "", website: seller.website || "" }
+      seller: {
+        id: seller.id, name: seller.name, email: seller.email,
+        storeName: seller.storeName, bio: seller.bio || "",
+        location: seller.location || "", website: seller.website || "",
+      },
     });
   }
 
@@ -149,15 +205,15 @@ async function router(req, res) {
         id: seller.id, name: seller.name, email: seller.email,
         storeName: seller.storeName, bio: seller.bio || "",
         location: seller.location || "", website: seller.website || "",
-        joinedAt: seller.joinedAt
+        joinedAt: seller.joinedAt,
       },
       productCount: myProducts.length,
       monthlyBill: myProducts.length * 25,
-      unreadMessages: unreadCount
+      unreadMessages: unreadCount,
     });
   }
 
-  // ── ACCOUNT SETTINGS ──────────────────────────────────────────────────────
+  // ── ACCOUNT SETTINGS ─────────────────────────────────────────────────────
   if (method === "PUT" && url === "/api/account") {
     const sess = getSession(req);
     if (!sess) return json(res, { error: "Unauthorized" }, 401);
@@ -166,7 +222,6 @@ async function router(req, res) {
     const seller = db.sellers[sess.sellerId];
     if (!seller) return json(res, { error: "Seller not found" }, 404);
 
-    // If changing password, verify current password
     if (newPassword) {
       if (!currentPassword) return json(res, { error: "Current password required to set a new one" }, 400);
       if (seller.password !== hash(currentPassword)) return json(res, { error: "Current password is incorrect" }, 401);
@@ -180,15 +235,21 @@ async function router(req, res) {
     db.sellers[sess.sellerId].location = (location || "").trim();
     db.sellers[sess.sellerId].website = (website || "").trim();
     writeDB(db);
+    // Auto-commit profile update
+    gitCommit(`chore(account): seller "${seller.name}" updated their profile`);
 
     const updated = db.sellers[sess.sellerId];
     return json(res, {
       ok: true,
-      seller: { id: updated.id, name: updated.name, email: updated.email, storeName: updated.storeName, bio: updated.bio, location: updated.location, website: updated.website }
+      seller: {
+        id: updated.id, name: updated.name, email: updated.email,
+        storeName: updated.storeName, bio: updated.bio,
+        location: updated.location, website: updated.website,
+      },
     });
   }
 
-  // ── PRODUCTS ──────────────────────────────────────────────────────────────
+  // ── PRODUCTS ─────────────────────────────────────────────────────────────
   if (method === "GET" && url === "/api/products") {
     const q = parseQuery(req.url);
     const db = readDB();
@@ -210,7 +271,6 @@ async function router(req, res) {
       products = products.filter((p) => p.category === q.category);
     if (q.sellerId)
       products = products.filter((p) => p.sellerId === q.sellerId);
-    // Sort by newest first
     products.sort((a, b) => b.createdAt - a.createdAt);
     return json(res, { products });
   }
@@ -228,8 +288,8 @@ async function router(req, res) {
         storeName: seller?.storeName,
         sellerBio: seller?.bio || "",
         sellerLocation: seller?.location || "",
-        sellerWebsite: seller?.website || ""
-      }
+        sellerWebsite: seller?.website || "",
+      },
     });
   }
 
@@ -243,13 +303,16 @@ async function router(req, res) {
     if (isNaN(parsedPrice) || parsedPrice < 0)
       return json(res, { error: "Price must be a valid positive number" }, 400);
     const db = readDB();
+    const seller = db.sellers[sess.sellerId];
     const product = {
       id: uid(), sellerId: sess.sellerId, name: name.trim(),
       description: description.trim(), price: parsedPrice,
-      category, imageUrl: imageUrl || "", createdAt: Date.now()
+      category, imageUrl: imageUrl || "", createdAt: Date.now(),
     };
     db.products.push(product);
     writeDB(db);
+    // Auto-commit new product listing
+    gitCommit(`feat(products): "${name.trim()}" listed by ${seller?.storeName || seller?.name || "a seller"} — $${parsedPrice} CAD · ${category}`);
     return json(res, { ok: true, product });
   }
 
@@ -261,6 +324,7 @@ async function router(req, res) {
     const idx = db.products.findIndex((p) => p.id === id && p.sellerId === sess.sellerId);
     if (idx === -1) return json(res, { error: "Not found or not yours" }, 404);
     const { name, description, price, category, imageUrl } = await parseBody(req);
+    const prevName = db.products[idx].name;
     if (name) db.products[idx].name = name.trim();
     if (description) db.products[idx].description = description.trim();
     if (price !== undefined) {
@@ -271,6 +335,9 @@ async function router(req, res) {
     if (imageUrl !== undefined) db.products[idx].imageUrl = imageUrl;
     db.products[idx].updatedAt = Date.now();
     writeDB(db);
+    const seller = db.sellers[sess.sellerId];
+    // Auto-commit product update
+    gitCommit(`fix(products): "${db.products[idx].name}" updated by ${seller?.storeName || seller?.name || "a seller"}`);
     return json(res, { ok: true, product: db.products[idx] });
   }
 
@@ -281,8 +348,12 @@ async function router(req, res) {
     const db = readDB();
     const idx = db.products.findIndex((p) => p.id === id && p.sellerId === sess.sellerId);
     if (idx === -1) return json(res, { error: "Not found or not yours" }, 404);
+    const deletedName = db.products[idx].name;
+    const seller = db.sellers[sess.sellerId];
     db.products.splice(idx, 1);
     writeDB(db);
+    // Auto-commit product deletion
+    gitCommit(`chore(products): "${deletedName}" removed by ${seller?.storeName || seller?.name || "a seller"}`);
     return json(res, { ok: true });
   }
 
@@ -296,7 +367,7 @@ async function router(req, res) {
     return json(res, { products, monthlyBill: products.length * 25 });
   }
 
-  // ── SELLERS / STORES ──────────────────────────────────────────────────────
+  // ── SELLERS / STORES ─────────────────────────────────────────────────────
   if (method === "GET" && url.match(/^\/api\/sellers\/[^/]+$/)) {
     const sellerId = url.split("/")[3];
     const db = readDB();
@@ -309,9 +380,9 @@ async function router(req, res) {
       seller: {
         id: seller.id, name: seller.name, storeName: seller.storeName,
         bio: seller.bio || "", location: seller.location || "",
-        website: seller.website || "", joinedAt: seller.joinedAt
+        website: seller.website || "", joinedAt: seller.joinedAt,
       },
-      products
+      products,
     });
   }
 
@@ -322,13 +393,35 @@ async function router(req, res) {
       return {
         id: s.id, name: s.name, storeName: s.storeName,
         bio: s.bio || "", location: s.location || "",
-        joinedAt: s.joinedAt, productCount
+        joinedAt: s.joinedAt, productCount,
       };
     }).filter((s) => s.productCount > 0);
     return json(res, { sellers });
   }
 
-  // ── MESSAGES (Contact Seller) ─────────────────────────────────────────────
+  // ── GITHUB ACTIVITY ──────────────────────────────────────────────────────
+  if (method === "GET" && url === "/api/github-activity") {
+    try {
+      const log = execSync(
+        'git log --oneline --no-merges -20 --pretty=format:"%H|%s|%ai|%an"',
+        { cwd: __dirname, stdio: "pipe" }
+      ).toString();
+      const commits = log
+        .trim()
+        .split("\n")
+        .filter(Boolean)
+        .map((line) => {
+          const [sha, ...rest] = line.split("|");
+          const [msg, date, author] = rest;
+          return { sha: sha.slice(0, 7), message: msg, date, author };
+        });
+      return json(res, { commits });
+    } catch {
+      return json(res, { commits: [] });
+    }
+  }
+
+  // ── MESSAGES ─────────────────────────────────────────────────────────────
   if (method === "POST" && url === "/api/messages") {
     const { senderName, senderEmail, message, productId, sellerId } = await parseBody(req);
     if (!senderName || !senderEmail || !message || !sellerId)
@@ -348,7 +441,7 @@ async function router(req, res) {
       id: uid(), sellerId, senderName: senderName.trim(),
       senderEmail: senderEmail.trim(), message: message.trim(),
       productId: productId || null, productName,
-      read: false, createdAt: Date.now()
+      read: false, createdAt: Date.now(),
     };
     db.messages.push(msg);
     writeDB(db);
@@ -389,7 +482,7 @@ async function router(req, res) {
     return json(res, { ok: true });
   }
 
-  // ── FAVORITES ─────────────────────────────────────────────────────────────
+  // ── FAVORITES ────────────────────────────────────────────────────────────
   if (method === "GET" && url === "/api/favorites") {
     const sess = getSession(req);
     if (!sess) return json(res, { favorites: [] });
@@ -434,7 +527,7 @@ async function router(req, res) {
   json(res, { error: "Not found" }, 404);
 }
 
-// ── Seed demo data ─────────────────────────────────────────────────────────
+// ── Seed demo data ──────────────────────────────────────────────────────────
 function seed() {
   const db = readDB();
   if (Object.keys(db.sellers).length > 0) return;
@@ -444,21 +537,21 @@ function seed() {
     password: hash("demo123"), storeName: "Sophie's Artisan Goods",
     bio: "Handmade goods crafted with love in Montreal. Every piece is one-of-a-kind.",
     location: "Montréal, QC", website: "",
-    joinedAt: Date.now() - 864e5 * 30
+    joinedAt: Date.now() - 864e5 * 30,
   };
   db.sellers[sid2] = {
     id: sid2, name: "Marcus Chen", email: "marcus@demo.com",
     password: hash("demo123"), storeName: "Chen Tech Finds",
     bio: "Curated electronics and tech accessories for the modern maker.",
     location: "Vancouver, BC", website: "",
-    joinedAt: Date.now() - 864e5 * 15
+    joinedAt: Date.now() - 864e5 * 15,
   };
   db.sellers[sid3] = {
     id: sid3, name: "Amara Osei", email: "amara@demo.com",
     password: hash("demo123"), storeName: "Amara's Art Studio",
     bio: "Original paintings and prints inspired by African heritage and Canadian nature.",
     location: "Toronto, ON", website: "",
-    joinedAt: Date.now() - 864e5 * 7
+    joinedAt: Date.now() - 864e5 * 7,
   };
   const demoProducts = [
     { name: "Hand-poured Soy Candle Set", description: "Set of 3 hand-poured soy wax candles with calming lavender, cedar, and citrus scents. Burns for 40+ hours each.", price: 48, category: "Handmade", imageUrl: "https://images.unsplash.com/photo-1608181831718-c9fca7c18c07?w=400&q=80", sellerId: sid1 },
@@ -478,6 +571,7 @@ function seed() {
     db.products.push({ id: uid(), createdAt: Date.now() - Math.random() * 864e5 * 20, ...p });
   });
   writeDB(db);
+  gitCommit("chore(seed): initialise demo sellers and product catalogue");
   console.log("✅ Seeded demo data. Login: sophie@demo.com / demo123");
 }
 
@@ -487,4 +581,5 @@ fs.mkdirSync(path.join(__dirname, "public"), { recursive: true });
 seed();
 http.createServer(router).listen(PORT, "0.0.0.0", () => {
   console.log(`🛍️  Millo 2026 is running at http://0.0.0.0:${PORT}`);
+  console.log(`📦  GitHub repo: https://github.com/dmarr1703/millo-2026`);
 });

@@ -1,8 +1,9 @@
 # Dependencies
 node_modules/
 
-# Runtime data
-db.json
+# Runtime data — db.json and products.json are intentionally tracked
+# so every product change is committed to GitHub
+# db.json        ← uncomment to exclude
 
 # Logs
 *.log
