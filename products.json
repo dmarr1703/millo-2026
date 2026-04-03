@@ -1,0 +1,182 @@
+[
+  {
+    "id": "44e79e4baba3ace4c2d4d714",
+    "name": "Hand-poured Soy Candle Set",
+    "description": "Set of 3 hand-poured soy wax candles with calming lavender, cedar, and citrus scents. Burns for 40+ hours each.",
+    "price": 48,
+    "category": "Handmade",
+    "imageUrl": "https://images.unsplash.com/photo-1608181831718-c9fca7c18c07?w=400&q=80",
+    "seller": {
+      "name": "Sophie Laurent",
+      "storeName": "Sophie's Artisan Goods",
+      "location": "Montréal, QC"
+    },
+    "listedAt": "2026-04-02T03:43:10.836Z",
+    "updatedAt": null
+  },
+  {
+    "id": "60bbca3b954e5460cbfe1786",
+    "name": "Macramé Wall Hanging",
+    "description": "Boho-chic hand-knotted macramé wall art, 60cm wide. Made with 100% natural cotton rope.",
+    "price": 75,
+    "category": "Handmade",
+    "imageUrl": "https://images.unsplash.com/photo-1601662528567-526cd06f6582?w=400&q=80",
+    "seller": {
+      "name": "Sophie Laurent",
+      "storeName": "Sophie's Artisan Goods",
+      "location": "Montréal, QC"
+    },
+    "listedAt": "2026-03-23T14:06:12.079Z",
+    "updatedAt": null
+  },
+  {
+    "id": "5a474bcb186eb51b11e4d250",
+    "name": "Ceramic Coffee Mug",
+    "description": "Wheel-thrown stoneware mug, holds 350ml, dishwasher safe. Each one unique with a speckled glaze.",
+    "price": 34,
+    "category": "Handmade",
+    "imageUrl": "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400&q=80",
+    "seller": {
+      "name": "Sophie Laurent",
+      "storeName": "Sophie's Artisan Goods",
+      "location": "Montréal, QC"
+    },
+    "listedAt": "2026-03-17T09:29:10.967Z",
+    "updatedAt": null
+  },
+  {
+    "id": "ef96bed53355a14fdd6a1913",
+    "name": "Wireless Charging Pad",
+    "description": "Fast Qi wireless charger, 15W max output, compatible with all Qi-enabled phones. Includes USB-C cable.",
+    "price": 42,
+    "category": "Electronics",
+    "imageUrl": "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400&q=80",
+    "seller": {
+      "name": "Marcus Chen",
+      "storeName": "Chen Tech Finds",
+      "location": "Vancouver, BC"
+    },
+    "listedAt": "2026-03-27T08:49:37.139Z",
+    "updatedAt": null
+  },
+  {
+    "id": "2643b66479fe19e15a5a60f6",
+    "name": "Mechanical Keyboard",
+    "description": "Compact 75% layout, hot-swappable switches, RGB backlight. Perfect for coders and writers alike.",
+    "price": 129,
+    "category": "Electronics",
+    "imageUrl": "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=400&q=80",
+    "seller": {
+      "name": "Marcus Chen",
+      "storeName": "Chen Tech Finds",
+      "location": "Vancouver, BC"
+    },
+    "listedAt": "2026-03-17T00:32:40.314Z",
+    "updatedAt": null
+  },
+  {
+    "id": "1ad5ecf0fd2a6abab53edb15",
+    "name": "Linen Tote Bag",
+    "description": "Heavyweight natural linen tote, reinforced handles, inner zip pocket. Holds up to 15kg.",
+    "price": 29,
+    "category": "Clothing",
+    "imageUrl": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&q=80",
+    "seller": {
+      "name": "Sophie Laurent",
+      "storeName": "Sophie's Artisan Goods",
+      "location": "Montréal, QC"
+    },
+    "listedAt": "2026-03-17T16:06:52.831Z",
+    "updatedAt": null
+  },
+  {
+    "id": "af72e56ce54f91df4fcaa8ed",
+    "name": "Abstract Acrylic Print — Sunrise",
+    "description": "Original abstract acrylic painting on 40×50cm canvas. Warm sunrise palette, ready to hang.",
+    "price": 195,
+    "category": "Art",
+    "imageUrl": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80",
+    "seller": {
+      "name": "Amara Osei",
+      "storeName": "Amara's Art Studio",
+      "location": "Toronto, ON"
+    },
+    "listedAt": "2026-03-27T04:59:39.405Z",
+    "updatedAt": null
+  },
+  {
+    "id": "aa67494918b6282a0862fe9b",
+    "name": "Botanical Watercolour Set",
+    "description": "Set of 6 A5 botanical watercolour prints, printed on 300gsm fine art paper. Perfect for framing.",
+    "price": 65,
+    "category": "Art",
+    "imageUrl": "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=400&q=80",
+    "seller": {
+      "name": "Amara Osei",
+      "storeName": "Amara's Art Studio",
+      "location": "Toronto, ON"
+    },
+    "listedAt": "2026-03-20T08:38:59.931Z",
+    "updatedAt": null
+  },
+  {
+    "id": "3f03484ba1e80a3508f0c38b",
+    "name": "Knitted Wool Scarf",
+    "description": "Hand-knitted merino wool scarf, 180cm long. Incredibly soft and warm for Canadian winters.",
+    "price": 58,
+    "category": "Clothing",
+    "imageUrl": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=400&q=80",
+    "seller": {
+      "name": "Sophie Laurent",
+      "storeName": "Sophie's Artisan Goods",
+      "location": "Montréal, QC"
+    },
+    "listedAt": "2026-03-24T04:23:18.380Z",
+    "updatedAt": null
+  },
+  {
+    "id": "78fca3a6144565581acbd3a6",
+    "name": "The Maker's Mindset",
+    "description": "A practical guide to building a creative business in the digital age. 240 pages, paperback.",
+    "price": 22,
+    "category": "Books",
+    "imageUrl": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&q=80",
+    "seller": {
+      "name": "Marcus Chen",
+      "storeName": "Chen Tech Finds",
+      "location": "Vancouver, BC"
+    },
+    "listedAt": "2026-03-21T22:36:20.386Z",
+    "updatedAt": null
+  },
+  {
+    "id": "eb3f570ae801f6eae53ff40e",
+    "name": "Herb Garden Starter Kit",
+    "description": "Everything you need to grow basil, mint, and thyme indoors. Includes pots, soil, and seed packets.",
+    "price": 37,
+    "category": "Home & Garden",
+    "imageUrl": "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&q=80",
+    "seller": {
+      "name": "Amara Osei",
+      "storeName": "Amara's Art Studio",
+      "location": "Toronto, ON"
+    },
+    "listedAt": "2026-03-21T08:19:12.838Z",
+    "updatedAt": null
+  },
+  {
+    "id": "0e4f0f78523e39d113fe71da",
+    "name": "Beeswax Food Wraps (3-pack)",
+    "description": "Reusable beeswax food wraps in small, medium, and large. Eco-friendly alternative to plastic wrap.",
+    "price": 26,
+    "category": "Home & Garden",
+    "imageUrl": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&q=80",
+    "seller": {
+      "name": "Sophie Laurent",
+      "storeName": "Sophie's Artisan Goods",
+      "location": "Montréal, QC"
+    },
+    "listedAt": "2026-03-30T15:02:37.860Z",
+    "updatedAt": null
+  }
+]
