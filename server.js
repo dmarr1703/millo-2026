@@ -4,6 +4,34 @@ const path = require("path");
 const crypto = require("crypto");
 const { execSync } = require("child_process");
 
+// ── Stripe ──────────────────────────────────────────────────────────────────
+// Set STRIPE_SECRET_KEY in your environment (or a .env file — never commit keys).
+// For local testing you can also create a .env file with:
+//   STRIPE_SECRET_KEY=sk_test_...
+let stripe;
+try {
+  // Load .env file if present (simple key=value, one per line)
+  const envFile = path.join(__dirname, ".env");
+  if (fs.existsSync(envFile)) {
+    fs.readFileSync(envFile, "utf8")
+      .split("\n")
+      .forEach((line) => {
+        const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.+)\s*$/);
+        if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^['"]|['"]$/g, "");
+      });
+  }
+
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeKey) {
+    console.warn("⚠️  STRIPE_SECRET_KEY not set. Payments disabled. Add it to a .env file or environment variable.");
+  } else {
+    stripe = require("stripe")(stripeKey);
+    console.log("💳 Stripe payments enabled.");
+  }
+} catch (e) {
+  console.warn("⚠️  Stripe module not found. Run: npm install  to enable payments.");
+}
+
 const DB_FILE = path.join(__dirname, "db.json");
 const PRODUCTS_FILE = path.join(__dirname, "products.json");
 
@@ -521,6 +549,85 @@ async function router(req, res) {
       writeDB(db);
     }
     return json(res, { ok: true });
+  }
+
+  // ── STRIPE CHECKOUT ──────────────────────────────────────────────────────
+  // POST /api/checkout  — create a Stripe Checkout Session for a product
+  if (method === "POST" && url === "/api/checkout") {
+    if (!stripe) {
+      return json(res, { error: "Payment system unavailable. Please run: npm install" }, 503);
+    }
+    const { productId } = await parseBody(req);
+    if (!productId) return json(res, { error: "productId required" }, 400);
+
+    const db = readDB();
+    const product = db.products.find((p) => p.id === productId);
+    if (!product) return json(res, { error: "Product not found" }, 404);
+
+    const seller = db.sellers[product.sellerId] || {};
+    const priceInCents = Math.round(product.price * 100);
+
+    try {
+      const origin =
+        (req.headers.origin && req.headers.origin !== "null"
+          ? req.headers.origin
+          : null) ||
+        `http://${req.headers.host || `localhost:${PORT}`}`;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency: "cad",
+              product_data: {
+                name: product.name,
+                description: product.description
+                  ? product.description.slice(0, 255)
+                  : undefined,
+                images: product.imageUrl ? [product.imageUrl] : [],
+                metadata: {
+                  millo_product_id: product.id,
+                  seller_store: seller.storeName || seller.name || "",
+                },
+              },
+              unit_amount: priceInCents,
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        success_url: `${origin}/?checkout=success&product=${encodeURIComponent(product.name)}&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url:  `${origin}/?checkout=cancel`,
+        automatic_tax: { enabled: false },
+        metadata: {
+          millo_product_id: product.id,
+          seller_id: product.sellerId,
+        },
+      });
+
+      return json(res, { url: session.url, sessionId: session.id });
+    } catch (err) {
+      console.error("Stripe error:", err.message);
+      return json(res, { error: err.message }, 500);
+    }
+  }
+
+  // GET /api/checkout/session/:id  — retrieve a completed session (for success page)
+  if (method === "GET" && url.match(/^\/api\/checkout\/session\/[^/]+$/)) {
+    if (!stripe) return json(res, { error: "Payments unavailable" }, 503);
+    const sessionId = url.split("/")[4];
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      return json(res, {
+        status: session.payment_status,
+        customerEmail: session.customer_details?.email || null,
+        amountTotal: session.amount_total,
+        currency: session.currency,
+      });
+    } catch (err) {
+      return json(res, { error: err.message }, 500);
+    }
   }
 
   // 404
