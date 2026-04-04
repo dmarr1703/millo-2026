@@ -2,7 +2,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const { execSync } = require("child_process");
+const { execSync, spawn } = require("child_process");
 
 // ── Stripe ──────────────────────────────────────────────────────────────────
 // Set STRIPE_SECRET_KEY in your environment (or a .env file — never commit keys).
@@ -36,21 +36,45 @@ const DB_FILE = path.join(__dirname, "db.json");
 const PRODUCTS_FILE = path.join(__dirname, "products.json");
 
 // ── GitHub auto-commit ──────────────────────────────────────────────────────
-function gitCommit(message) {
+// Runs git operations in the background so they never block the HTTP server.
+function runCmd(cmd, args, cwd) {
+  return new Promise((resolve) => {
+    const proc = spawn(cmd, args, { cwd, stdio: "pipe" });
+    let stderr = "";
+    proc.stderr.on("data", (d) => (stderr += d.toString()));
+    proc.on("close", (code) => resolve({ code, stderr }));
+    proc.on("error", (err) => resolve({ code: 1, stderr: err.message }));
+  });
+}
+
+async function gitCommit(message) {
   try {
-    execSync("git add db.json products.json 2>/dev/null || git add db.json", {
+    // Stage db.json and products.json
+    await runCmd("git", ["add", "db.json", "products.json"], __dirname);
+
+    // Commit (allow-empty so it never errors even if nothing changed)
+    const commit = await runCmd(
+      "git",
+      ["commit", "-m", message, "--allow-empty"],
+      __dirname
+    );
+    if (commit.code !== 0 && !commit.stderr.includes("nothing to commit")) {
+      console.warn("⚠️  Git commit warning:", commit.stderr.trim());
+    }
+
+    // Push in background — fire and forget so the server never waits on network
+    const push = spawn("git", ["push", "origin", "HEAD"], {
       cwd: __dirname,
       stdio: "pipe",
+      detached: true,
     });
-    execSync(`git commit -m ${JSON.stringify(message)} --allow-empty`, {
-      cwd: __dirname,
-      stdio: "pipe",
+    push.unref(); // Let the process run independently
+    push.on("close", (code) => {
+      if (code === 0) console.log(`✅ GitHub push: ${message}`);
+      else console.warn(`⚠️  Git push exited ${code} for: ${message}`);
     });
-    execSync("git push origin HEAD 2>&1 || true", {
-      cwd: __dirname,
-      stdio: "pipe",
-    });
-    console.log(`✅ GitHub commit: ${message}`);
+
+    console.log(`✅ GitHub commit queued: ${message}`);
     return true;
   } catch (e) {
     console.warn("⚠️  Git commit failed:", e.message);
