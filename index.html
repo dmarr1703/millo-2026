@@ -1031,7 +1031,7 @@ async function doSignup() {
   if (!name || !storeName || !email || !password) return showAlert('authAlert', 'err', 'Please fill in all fields.');
   if (password.length < 6) return showAlert('authAlert', 'err', 'Password must be at least 6 characters.');
   const btn = document.getElementById('signupBtn');
-  btn.innerHTML = '<span class="spinner"></span>';
+  btn.innerHTML = '<span class="spinner"></span> Creating…';
   btn.disabled = true;
   const r = await api('POST', '/api/signup', { name, email, password, storeName });
   btn.innerHTML = 'Create My Store';
@@ -1040,10 +1040,11 @@ async function doSignup() {
   currentSeller = r.seller;
   closeModal('authModal');
   updateNav();
+  loadFavorites();
   showPage('dashboard');
   toast(`Store created! Welcome to Millo, ${r.seller.name}! 🛍️`, 'ok', 5000);
-  // Refresh GitHub feed after signup commit
-  setTimeout(loadGithubActivity, 2000);
+  // Refresh GitHub feed after signup commit (give server time to commit)
+  setTimeout(loadGithubActivity, 3000);
 }
 async function logout() {
   await api('POST', '/api/logout');
