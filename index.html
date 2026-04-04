@@ -562,6 +562,41 @@ footer strong{color:var(--clay)}
   </div>
 </div>
 
+<!-- CHECKOUT SUCCESS PAGE -->
+<div id="page-checkout-success" class="page">
+  <div style="max-width:560px;margin:5rem auto;padding:2rem;text-align:center">
+    <div style="font-size:4rem;margin-bottom:1.2rem">🎉</div>
+    <h2 style="font-size:2rem;margin-bottom:.6rem">Order Confirmed!</h2>
+    <p style="color:var(--fog);font-size:1rem;line-height:1.7;margin-bottom:.5rem">
+      Thank you for your purchase on <strong style="color:var(--terracotta)">Millo</strong>!
+    </p>
+    <p id="successProductName" style="color:var(--fog);font-size:.93rem;margin-bottom:2rem"></p>
+    <div id="successDetails" style="background:var(--warm);border-radius:14px;padding:1.4rem 1.8rem;margin-bottom:2rem;text-align:left;font-size:.9rem;line-height:1.8;display:none">
+      <div><strong>Payment status:</strong> <span id="successStatus" style="color:var(--green);font-weight:600"></span></div>
+      <div><strong>Email:</strong> <span id="successEmail"></span></div>
+      <div><strong>Amount paid:</strong> <span id="successAmount"></span></div>
+    </div>
+    <p style="font-size:.85rem;color:var(--fog);margin-bottom:2rem">
+      If you have any questions, email <a href="mailto:orders@millomarket.ca" style="color:var(--terracotta)">orders@millomarket.ca</a>.
+    </p>
+    <button class="btn btn-primary" onclick="showPage('home')" style="margin-right:.8rem">Continue Shopping</button>
+    <button class="btn btn-ghost" onclick="showPage('home')">← Back to Millo</button>
+  </div>
+</div>
+
+<!-- CHECKOUT CANCEL PAGE -->
+<div id="page-checkout-cancel" class="page">
+  <div style="max-width:520px;margin:5rem auto;padding:2rem;text-align:center">
+    <div style="font-size:4rem;margin-bottom:1.2rem">🛒</div>
+    <h2 style="font-size:2rem;margin-bottom:.6rem">Checkout Cancelled</h2>
+    <p style="color:var(--fog);font-size:1rem;line-height:1.7;margin-bottom:2rem">
+      No worries — your cart is still waiting! Head back to browse and pick up where you left off.
+    </p>
+    <button class="btn btn-primary" onclick="showPage('home')" style="margin-right:.8rem">Browse Products</button>
+    <button class="btn btn-ghost" onclick="history.back()">← Go Back</button>
+  </div>
+</div>
+
 <!-- TOAST CONTAINER -->
 <div id="toastContainer"></div>
 
@@ -780,7 +815,10 @@ async function openDetail(id) {
       ${product.sellerLocation ? `<span style="color:var(--clay)">· 📍 ${escHtml(product.sellerLocation)}</span>` : ''}
     </div>
     <div class="detail-actions">
+      <button class="btn btn-primary" id="buyNowBtn" onclick="startCheckout('${product.id}')" style="flex:1;background:var(--green);font-size:.97rem">💳 Buy Now — $${Number(product.price).toFixed(2)} CAD</button>
       <button class="btn btn-primary" onclick="openContact('${product.sellerId}','${product.id}','${escHtml(product.name).replace(/'/g,'\\\'')}')" style="flex:1">✉️ Contact Seller</button>
+    </div>
+    <div class="detail-actions" style="margin-top:.4rem">
       <button class="btn btn-ghost ${isFav?'fav-active':''}" id="detailFavBtn" onclick="toggleFav(null,'${id}',true)" style="min-width:120px">${isFav?'❤️ Saved':'🤍 Save'}</button>
       <button class="btn btn-ghost" onclick="closeModal('detailModal');openStore('${product.sellerId}')">🏪 View Store</button>
     </div>
@@ -1234,7 +1272,76 @@ function timeAgo(ts) {
   return new Date(ts).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+// ── STRIPE CHECKOUT ──────────────────────────────────────────────────────────
+async function startCheckout(productId) {
+  const btn = document.getElementById('buyNowBtn');
+  if (btn) { btn.innerHTML = '<span class="spinner"></span> Redirecting…'; btn.disabled = true; }
+  try {
+    const r = await api('POST', '/api/checkout', { productId });
+    if (r.error) {
+      toast('Checkout error: ' + r.error, 'err', 5000);
+      if (btn) { btn.innerHTML = '💳 Buy Now'; btn.disabled = false; }
+      return;
+    }
+    // Redirect to Stripe hosted checkout
+    window.location.href = r.url;
+  } catch (e) {
+    toast('Could not start checkout. Please try again.', 'err');
+    if (btn) { btn.innerHTML = '💳 Buy Now'; btn.disabled = false; }
+  }
+}
+
+// Handle redirect-back from Stripe (success / cancel query params)
+async function handleCheckoutReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('checkout');
+  if (!status) return;
+
+  // Clean URL without reloading
+  const cleanUrl = window.location.pathname;
+  window.history.replaceState({}, '', cleanUrl);
+
+  if (status === 'cancel') {
+    showPage('checkout-cancel');
+    return;
+  }
+
+  if (status === 'success') {
+    const productName = params.get('product') || '';
+    const sessionId   = params.get('session_id') || '';
+
+    if (productName) {
+      const el = document.getElementById('successProductName');
+      if (el) el.textContent = `You purchased: ${productName}`;
+    }
+
+    // Try to fetch session details from our API
+    if (sessionId) {
+      try {
+        const data = await api('GET', `/api/checkout/session/${sessionId}`);
+        if (data && !data.error) {
+          const det = document.getElementById('successDetails');
+          if (det) {
+            document.getElementById('successStatus').textContent =
+              data.status === 'paid' ? 'Paid ✅' : data.status;
+            document.getElementById('successEmail').textContent =
+              data.customerEmail || 'N/A';
+            document.getElementById('successAmount').textContent =
+              data.amountTotal
+                ? `$${(data.amountTotal / 100).toFixed(2)} ${(data.currency || 'CAD').toUpperCase()}`
+                : 'N/A';
+            det.style.display = 'block';
+          }
+        }
+      } catch (_) { /* silently ignore */ }
+    }
+
+    showPage('checkout-success');
+  }
+}
+
 init();
+handleCheckoutReturn();
 </script>
 </body>
 </html>
