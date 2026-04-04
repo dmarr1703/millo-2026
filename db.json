@@ -32,6 +32,17 @@
       "location": "Toronto, ON",
       "website": "",
       "joinedAt": 1774626004968
+    },
+    "3369a65f86d91c1b3b0b37e5": {
+      "id": "3369a65f86d91c1b3b0b37e5",
+      "name": "Test User",
+      "email": "testuser99@example.com",
+      "password": "a476450cbd10b969a80606ace337127566da12ba7c7b65f980af28009e113f68",
+      "storeName": "Test Store",
+      "bio": "",
+      "location": "",
+      "website": "",
+      "joinedAt": 1775310772660
     }
   },
   "products": [
@@ -156,7 +167,11 @@
       "sellerId": "9d5fa63e76f47251324d9290"
     }
   ],
-  "sessions": {},
+  "sessions": {
+    "4537dfe5026df0a60c2728ce": {
+      "sellerId": "3369a65f86d91c1b3b0b37e5"
+    }
+  },
   "messages": [],
   "favorites": {}
 }
