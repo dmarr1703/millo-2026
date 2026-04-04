@@ -43,6 +43,17 @@
       "location": "",
       "website": "",
       "joinedAt": 1775310772660
+    },
+    "e242e6cd975efd4bfd998926": {
+      "id": "e242e6cd975efd4bfd998926",
+      "name": "Quick Test",
+      "email": "quicktest123@example.com",
+      "password": "e83a8387f31abc6e8e52fb79b348a91e528bca66923a1e525204b3bf81a3262d",
+      "storeName": "Quick Shop",
+      "bio": "",
+      "location": "",
+      "website": "",
+      "joinedAt": 1775310800257
     }
   },
   "products": [
@@ -170,6 +181,9 @@
   "sessions": {
     "4537dfe5026df0a60c2728ce": {
       "sellerId": "3369a65f86d91c1b3b0b37e5"
+    },
+    "a876922c04ea11d1fe85783c": {
+      "sellerId": "e242e6cd975efd4bfd998926"
     }
   },
   "messages": [],
